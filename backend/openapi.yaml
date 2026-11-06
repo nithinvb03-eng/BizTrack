@@ -1,0 +1,1276 @@
+openapi: 3.1.0
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+paths:
+  /api/credit-takers:
+    get:
+      tags:
+      - Credits
+      operationId: listCreditTakers
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Credit takers and database-calculated totals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CreditTakerResponse"
+    post:
+      tags:
+      - Credits
+      operationId: addCreditTaker
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreditTakerRequest"
+      responses:
+        "201":
+          description: Credit taker created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreditTakerResponse"
+  /api/credit-takers/overview:
+    get:
+      tags:
+      - Credits
+      operationId: creditTakerOverview
+      responses:
+        "200":
+          description: Server-calculated totals for the business
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreditTakerOverview"
+  /api/credit-takers/{id}:
+    get:
+      tags:
+      - Credits
+      operationId: getCreditTaker
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: Credit taker and database-calculated totals
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreditTakerResponse"
+        "404":
+          description: Credit taker not found in the current business
+    put:
+      tags:
+      - Credits
+      operationId: updateCreditTaker
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreditTakerRequest"
+      responses:
+        "200":
+          description: Credit taker updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreditTakerResponse"
+    delete:
+      tags:
+      - Credits
+      operationId: deleteCreditTaker
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "204":
+          description: Credit taker deleted
+        "409":
+          description: The taker has entries or retained receipts and cannot be deleted
+  /api/credit-takers/{id}/entries:
+    post:
+      tags:
+      - Credits
+      operationId: addCreditEntry
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreditEntryRequest"
+      responses:
+        "201":
+          description: Credit entry created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreditEntryResponse"
+    get:
+      tags:
+      - Credits
+      operationId: listCreditEntries
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      responses:
+        "200":
+          description: Credit entries, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CreditEntryResponse"
+  /api/credit-takers/{id}/day:
+    get:
+      tags:
+      - Credits
+      operationId: creditPerDay
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      responses:
+        "200":
+          description: Entries and database-calculated total for one date
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreditDayResponse"
+  /api/credit-takers/{id}/daily:
+    get:
+      tags:
+      - Credits
+      operationId: creditDailySummary
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      responses:
+        "200":
+          description: All dates in the range, including dates with zero entries
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreditDailyResponse"
+  /api/credit-takers/{id}/monthly:
+    get:
+      tags:
+      - Credits
+      operationId: creditMonthlySummary
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: year
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: Twelve database-calculated monthly totals
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreditMonthlyResponse"
+  /api/credit-takers/{id}/receipt-preview:
+    get:
+      tags:
+      - Credits
+      operationId: previewCreditReceipt
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      responses:
+        "200":
+          description: Receipt preview without saving a receipt
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreditReceiptResponse"
+  /api/credit-takers/{id}/receipt:
+    get:
+      tags:
+      - Credits
+      operationId: generateCreditReceipt
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      responses:
+        "200":
+          description: Generated and persisted account receipt
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreditReceiptResponse"
+  /api/credit-takers/{id}/receipts:
+    get:
+      tags:
+      - Credits
+      operationId: listCreditReceipts
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: Previously generated receipts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CreditReceiptListItem"
+  /api/credit-entries/{entryId}:
+    put:
+      tags:
+      - Credits
+      operationId: updateCreditEntry
+      parameters:
+      - name: entryId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreditEntryRequest"
+      responses:
+        "200":
+          description: Credit entry updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreditEntryResponse"
+    delete:
+      tags:
+      - Credits
+      operationId: deleteCreditEntry
+      parameters:
+      - name: entryId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "204":
+          description: Credit entry deleted
+  /api/credit-receipts/{receiptId}/pdf:
+    get:
+      tags:
+      - Credits
+      operationId: downloadCreditReceiptPdf
+      parameters:
+      - name: receiptId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: Receipt PDF download
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /api/credit-receipts/{receiptId}/email:
+    post:
+      tags:
+      - Credits
+      operationId: emailCreditReceipt
+      parameters:
+      - name: receiptId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreditEmailRequest"
+      responses:
+        "204":
+          description: Receipt email sent
+        "503":
+          description: Email is not configured
+  /api/transactions/{id}:
+    put:
+      tags:
+      - transaction-controller
+      operationId: update
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Transaction"
+    delete:
+      tags:
+      - transaction-controller
+      operationId: delete
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: No Content
+  /api/profile:
+    get:
+      tags:
+      - profile-controller
+      operationId: get
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+    put:
+      tags:
+      - profile-controller
+      operationId: update_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+  /api/transactions:
+    get:
+      tags:
+      - transaction-controller
+      operationId: list
+      parameters:
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - INCOME
+          - EXPENSE
+      - name: categoryId
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+    post:
+      tags:
+      - transaction-controller
+      operationId: add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionRequest"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Transaction"
+  /api/members:
+    get:
+      tags:
+      - member-controller
+      operationId: list_1
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MemberResponse"
+    post:
+      tags:
+      - member-controller
+      operationId: add_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddMemberRequest"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MemberResponse"
+  /api/auth/register:
+    post:
+      tags:
+      - auth-controller
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+  /api/auth/logout:
+    post:
+      tags:
+      - auth-controller
+      operationId: logout
+      responses:
+        "204":
+          description: No Content
+  /api/auth/login:
+    post:
+      tags:
+      - auth-controller
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+  /api/members/{id}/role:
+    patch:
+      tags:
+      - member-controller
+      operationId: changeRole
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MemberResponse"
+  /api/summary:
+    get:
+      tags:
+      - report-controller
+      operationId: summary
+      parameters:
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SummaryResponse"
+  /api/reports/monthly:
+    get:
+      tags:
+      - report-controller
+      operationId: monthly
+      parameters:
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MonthRow"
+  /api/dashboard:
+    get:
+      tags:
+      - report-controller
+      operationId: dashboard
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DashboardResponse"
+  /api/categories:
+    get:
+      tags:
+      - category-controller
+      operationId: list_2
+      parameters:
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - INCOME
+          - EXPENSE
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+  /api/auth/me:
+    get:
+      tags:
+      - auth-controller
+      operationId: me
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Access"
+components:
+  schemas:
+    CreditTakerRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        phone:
+          type: [string, "null"]
+          pattern: "^(?:\\+91)?[0-9]{10}$"
+        email:
+          type: [string, "null"]
+          format: email
+          maxLength: 254
+        type:
+          type: [string, "null"]
+          enum: [CUSTOMER, RETAILER, OTHER]
+      required: [name]
+    CreditEntryRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          minimum: 0.01
+          maximum: 99999999.99
+          multipleOf: 0.01
+        entryDate:
+          type: string
+          format: date
+        entryTime:
+          type: string
+          format: time
+        note:
+          type: [string, "null"]
+          maxLength: 200
+      required: [amount, entryDate, entryTime]
+    CreditTakerResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        phone:
+          type: [string, "null"]
+        email:
+          type: [string, "null"]
+        type:
+          type: string
+          enum: [CUSTOMER, RETAILER, OTHER]
+        totalGiven:
+          type: number
+        entryCount:
+          type: integer
+          format: int64
+        lastEntryDate:
+          type: [string, "null"]
+          format: date
+    CreditTakerOverview:
+      type: object
+      properties:
+        totalGiven:
+          type: number
+        creditTakerCount:
+          type: integer
+          format: int64
+    CreditEntryResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        creditTakerId:
+          type: integer
+          format: int32
+        amount:
+          type: number
+        entryDate:
+          type: string
+          format: date
+        entryTime:
+          type: string
+          format: time
+        note:
+          type: [string, "null"]
+    CreditDateSummary:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        count:
+          type: integer
+          format: int64
+        total:
+          type: number
+    CreditDayResponse:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreditEntryResponse"
+        count:
+          type: integer
+          format: int64
+        dayTotal:
+          type: number
+    CreditDailyResponse:
+      type: object
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        days:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreditDateSummary"
+        grandTotal:
+          type: number
+    CreditMonthSummary:
+      type: object
+      properties:
+        month:
+          type: integer
+          format: int32
+        count:
+          type: integer
+          format: int64
+        total:
+          type: number
+    CreditMonthlyResponse:
+      type: object
+      properties:
+        year:
+          type: integer
+          format: int32
+        months:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreditMonthSummary"
+        yearTotal:
+          type: number
+    CreditReceiptEntry:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        time:
+          type: string
+          format: time
+        amount:
+          type: number
+        note:
+          type: [string, "null"]
+    CreditReceiptResponse:
+      type: object
+      properties:
+        id:
+          type: [integer, "null"]
+          format: int32
+        businessName:
+          type: string
+        businessGstin:
+          type: [string, "null"]
+        receiptNo:
+          type: string
+        generatedAt:
+          type: string
+          format: date-time
+        generatedBy:
+          type: string
+        creditTakerId:
+          type: integer
+          format: int32
+        creditTakerName:
+          type: string
+        phone:
+          type: [string, "null"]
+        type:
+          type: string
+          enum: [CUSTOMER, RETAILER, OTHER]
+        periodFrom:
+          type: string
+          format: date
+        periodTo:
+          type: string
+          format: date
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreditReceiptEntry"
+        entryCount:
+          type: integer
+          format: int64
+        totalAmount:
+          type: number
+    CreditReceiptListItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        receiptNo:
+          type: string
+        periodFrom:
+          type: string
+          format: date
+        periodTo:
+          type: string
+          format: date
+        totalAmount:
+          type: number
+        entryCount:
+          type: integer
+          format: int64
+        generatedAt:
+          type: string
+          format: date-time
+    CreditEmailRequest:
+      type: object
+      properties:
+        toEmail:
+          type: [string, "null"]
+          format: email
+          maxLength: 254
+    TransactionRequest:
+      type: object
+      properties:
+        transactionType:
+          type: string
+          enum:
+          - INCOME
+          - EXPENSE
+        amount:
+          type: number
+          minimum: 0.01
+        transactionDate:
+          type: string
+          format: date
+        categoryId:
+          type: integer
+          format: int32
+        description:
+          type: string
+          minLength: 1
+        paymentMethod:
+          type: string
+      required:
+      - amount
+      - categoryId
+      - description
+      - transactionDate
+      - transactionType
+    Transaction:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        id:
+          type: integer
+          format: int64
+        businessId:
+          type: integer
+          format: int32
+        createdBy:
+          type: integer
+          format: int32
+        categoryId:
+          type: integer
+          format: int32
+        transactionType:
+          type: string
+          enum:
+          - INCOME
+          - EXPENSE
+        amount:
+          type: number
+        transactionDate:
+          type: string
+          format: date
+        description:
+          type: string
+        paymentMethod:
+          type: string
+    ProfileRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+          minLength: 1
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+      required:
+      - email
+      - fullName
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        fullName:
+          type: string
+        email:
+          type: string
+    AddMemberRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        role:
+          type: string
+          enum:
+          - OWNER
+          - EMPLOYEE
+          - VIEWER
+      required:
+      - email
+      - role
+    MemberResponse:
+      type: object
+      properties:
+        memberId:
+          type: integer
+          format: int32
+        userId:
+          type: integer
+          format: int32
+        fullName:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum:
+          - OWNER
+          - EMPLOYEE
+          - VIEWER
+    RegisterRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+          minLength: 1
+        businessName:
+          type: string
+          minLength: 1
+        role:
+          type: string
+          enum:
+          - OWNER
+          - EMPLOYEE
+          - VIEWER
+        password:
+          type: string
+          minLength: 1
+          pattern: "^(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$"
+        termsAccepted:
+          type: boolean
+      required:
+      - businessName
+      - email
+      - fullName
+      - password
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+      required:
+      - email
+      - password
+    LoginResponse:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int32
+        fullName:
+          type: string
+        email:
+          type: string
+        businessId:
+          type: integer
+          format: int32
+        role:
+          type: string
+          enum:
+          - OWNER
+          - EMPLOYEE
+          - VIEWER
+    RoleRequest:
+      type: object
+      properties:
+        role:
+          type: string
+          enum:
+          - OWNER
+          - EMPLOYEE
+          - VIEWER
+      required:
+      - role
+    SummaryResponse:
+      type: object
+      properties:
+        inflow:
+          type: number
+        outflow:
+          type: number
+        profit:
+          type: number
+        marginPercent:
+          type: number
+    MonthRow:
+      type: object
+      properties:
+        month:
+          type: string
+        inflow:
+          type: number
+        outflow:
+          type: number
+        profit:
+          type: number
+        marginPercent:
+          type: number
+    DashboardResponse:
+      type: object
+      properties:
+        totalInflow:
+          type: number
+        totalOutflow:
+          type: number
+        netProfit:
+          type: number
+        marginPercent:
+          type: number
+        inflowVsLastMonthPercent:
+          type: number
+        outflowVsLastMonthPercent:
+          type: number
+        cashRatio:
+          type: number
+        avgMonthlyInflow:
+          type: number
+        avgMonthlyOutflow:
+          type: number
+        inflowGrowthPercent:
+          type: number
+        highestSurplusMonth:
+          type: string
+        highestSurplusAmount:
+          type: number
+        months:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonthRow"
+    Category:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        id:
+          type: integer
+          format: int32
+        businessId:
+          type: integer
+          format: int32
+        categoryName:
+          type: string
+        transactionType:
+          type: string
+          enum:
+          - INCOME
+          - EXPENSE
+    Access:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int32
+        businessId:
+          type: integer
+          format: int32
+        role:
+          type: string
+          enum:
+          - OWNER
+          - EMPLOYEE
+          - VIEWER
