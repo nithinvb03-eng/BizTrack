@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bizTrackUI name="BizTrack Profit Tracker" version="2.4">
+  <theme>
+    <color name="primary" value="#13877d"/>
+    <color name="background" value="#f7f8fc"/>
+    <color name="surface" value="#ffffff"/>
+    <color name="text" value="#273348"/>
+    <font family="Inter" role="body"/>
+    <font family="Manrope" role="heading"/>
+    <cornerRadius size="card" value="11"/>
+    <cornerRadius size="control" value="5"/>
+  </theme>
+
+  <shared>
+    <header>
+      <brand name="BizTrack" subtitle="PROFIT TRACKER"/>
+      <action id="support" label="Help &amp; Support"/>
+      <action id="profile" label="Profile"/>
+    </header>
+    <footer>
+      <text>© 2026 BizTrack Technologies Pvt. Ltd. All rights reserved.</text>
+      <badge>GST Compliant</badge>
+      <badge>256-bit SSL</badge>
+    </footer>
+  </shared>
+
+  <screen id="sign-in" initial="true" title="Welcome back to BizTrack">
+    <card width="414">
+      <productBadge>v2.4</productBadge>
+      <eyebrow>FINANCIAL LEDGER</eyebrow>
+      <description>Sign in to manage your finances, track analytics, and stay compliant.</description>
+      <profileHint name="Sathya S (Owner)" email="sathya@biztrack.local" business="Sathya Traders"/>
+      <form action="show-dashboard">
+        <field id="email" label="Email address" type="email" required="true" autocomplete="username"/>
+        <field id="password" label="Password" type="password" required="true" autocomplete="current-password"/>
+        <action id="forgot-password" label="Forgot password?" target="password-reset"/>
+        <checkbox id="remember-device" label="Remember this device for 30 days" checked="true"/>
+        <button style="primary" label="Sign in to Dashboard" action="show-dashboard"/>
+      </form>
+      <trustBadges>
+        <badge title="Bank Grade" description="256-bit AES"/>
+        <badge title="GST Auto" description="Reconciliation"/>
+        <badge title="No Hidden" description="Fees, ever"/>
+      </trustBadges>
+      <action id="create-account" label="Create an account / Register" target="registration"/>
+    </card>
+  </screen>
+
+  <screen id="registration" title="Create your BizTrack account">
+    <card width="450">
+      <eyebrow>MSME &amp; CORPORATE ONBOARDING</eyebrow>
+      <description>Start tracking business finances, profit margins, and GST ledger.</description>
+      <includedFeatures>
+        <feature>Free 30-day advanced plan</feature>
+        <feature>GST-ready reports and reconciliation</feature>
+        <feature>Multi-user role governance</feature>
+      </includedFeatures>
+      <form action="registration-confirmation">
+        <field id="full-name" label="Full name" type="text" required="true" autocomplete="name"/>
+        <field id="email" label="Email address" type="email" required="true" autocomplete="email"/>
+        <field id="business-name" label="Business entity name" type="text" required="true" autocomplete="organization"/>
+        <select id="category" label="Category">
+          <option>Retail &amp; Wholesale Trade</option>
+          <option>Professional Services</option>
+          <option>Manufacturing</option>
+          <option>Other</option>
+        </select>
+        <select id="currency" label="Currency">
+          <option>INR (₹) Indian Rupee</option>
+          <option>USD ($) US Dollar</option>
+          <option>EUR (€) Euro</option>
+        </select>
+        <field id="password" label="Create password" type="password" required="true" minLength="8" autocomplete="new-password"/>
+        <checkbox id="terms" required="true" label="I agree to the Terms of Service, Privacy Policy, and GST Compliance guidelines."/>
+        <button style="primary" label="Create Business Account" action="registration-confirmation"/>
+      </form>
+      <action id="return-to-sign-in" label="Sign in" target="sign-in"/>
+    </card>
+  </screen>
+
+  <screen id="password-reset" title="Reset your password">
+    <card width="390">
+      <description>Enter the email address linked to your BizTrack account to receive a secure reset link.</description>
+      <form action="send-password-reset">
+        <field id="email" label="Email address" type="email" required="true" autocomplete="email"/>
+        <button style="primary" label="Send reset link" action="send-password-reset"/>
+      </form>
+      <action id="return-to-sign-in" label="Back to sign in" target="sign-in"/>
+    </card>
+  </screen>
+
+  <screen id="dashboard" title="Business overview">
+    <navigation>
+      <item id="overview" label="Overview" icon="LayoutDashboard"/>
+      <item id="transactions" label="Transactions" icon="CreditCard"/>
+      <item id="reports" label="Reports" icon="FileSpreadsheet"/>
+      <item id="customers" label="Customers" icon="Users"/>
+      <item id="sign-out" label="Sign out" action="sign-out"/>
+    </navigation>
+    <main>
+      <toolbar>
+        <search placeholder="Search"/>
+        <action id="notifications" label="Notifications"/>
+        <profile name="Sathya S." role="Owner"/>
+      </toolbar>
+      <heading title="Good morning, Sathya" subtitle="Here's how your business is doing today."/>
+      <dateFilter label="Last 30 days"/>
+      <metrics>
+        <metric id="revenue" label="Total revenue" value="₹2,48,650" trend="12.8%"/>
+        <metric id="expenses" label="Total expenses" value="₹1,36,420" trend="4.2%"/>
+        <metric id="profit" label="Net profit" value="₹1,12,230" trend="18.6%"/>
+        <metric id="outstanding" label="Outstanding" value="₹32,000" trend="2 invoices"/>
+      </metrics>
+      <chart id="revenue-overview" title="Revenue overview" series="revenue,expenses" period="monthly"/>
+      <chart id="profit-margin" title="Profit margin" value="45.1%"/>
+      <table id="recent-transactions" title="Recent transactions">
+        <columns>
+          <column>Transaction</column>
+          <column>Category</column>
+          <column>Date</column>
+          <column>Amount</column>
+          <column>Status</column>
+        </columns>
+        <action id="add-transaction" label="Add transaction"/>
+        <action id="all-transactions" label="All transactions"/>
+      </table>
+    </main>
+  </screen>
+</bizTrackUI>
